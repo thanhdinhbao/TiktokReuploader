@@ -77,7 +77,6 @@ namespace TiktokRender
 
         #endregion
 
-
         async void CallAPI(string cursor)
         {
             dtVideo.Rows.Clear();
@@ -148,31 +147,31 @@ namespace TiktokRender
         void DownloadVideo(string wmplay, string path)
         {
             var client = new WebClient();
-            client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-            client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            //client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+            //client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
             client.DownloadFile(wmplay, path);
 
         }
 
-        void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)delegate
-            {
-                double bytesIn = double.Parse(e.BytesReceived.ToString());
-                double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
-                double percentage = bytesIn / totalBytes * 100;
-                label1.Text += "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
-                textBox1.Text += "Percentage:" + percentage;
-                progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
-            });
-        }
-        void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
-        {
-            this.BeginInvoke((MethodInvoker)delegate
-            {
-                textBox1.Text += "Completed";
-            });
-        }
+        //void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        //{
+        //    this.BeginInvoke((MethodInvoker)delegate
+        //    {
+        //        double bytesIn = double.Parse(e.BytesReceived.ToString());
+        //        double totalBytes = double.Parse(e.TotalBytesToReceive.ToString());
+        //        double percentage = bytesIn / totalBytes * 100;
+        //        label1.Text += "Downloaded " + e.BytesReceived + " of " + e.TotalBytesToReceive;
+        //        textBox1.Text += "Percentage:" + percentage;
+        //        progressBar1.Value = int.Parse(Math.Truncate(percentage).ToString());
+        //    });
+        //}
+        //void client_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
+        //{
+        //    this.BeginInvoke((MethodInvoker)delegate
+        //    {
+        //        textBox1.Text += "Completed";
+        //    });
+        //}
 
         private void dtVideo_CellClick(object sender, DataGridViewCellEventArgs e)
         {
