@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System.ComponentModel;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace TiktokRender
 {
@@ -220,6 +220,44 @@ namespace TiktokRender
         {
             int rowindex = dtVideo.CurrentCell.RowIndex;
             dtVideo.Rows[rowindex].Cells[0].Value = false;
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            //string videoFile = @"D:\vs\TiktokRender\TiktokRender\bin\Debug\net6.0-windows\thanhdinhbao\7198939748382067995.mp4 ";
+            //string outputFile = @"D:\vs\TiktokRender\TiktokRender\bin\Debug\net6.0-windows\thanhdinhbao\final.avi";
+
+
+            string path = @"D:\vs\TiktokRender\TiktokRender\bin\Debug\net6.0-windows\thanhdinhbao\test.mp4";
+            string outputpath = @"D:\vs\TiktokRender\TiktokRender\bin\Debug\net6.0-windows\thanhdinhbao\final.mp4";
+            string fileargs = String.Format("-i {0} -ss 00:01:00 -codec copy -t 60 {1}", path, outputpath);
+
+
+
+            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            p.StartInfo.FileName = @"D:\vs\TiktokRender\TiktokRender\bin\Debug\net6.0-windows\ffmpeg.exe";
+            p.StartInfo.Arguments = fileargs;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.CreateNoWindow = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.Start();
+
+
+            p.WaitForExit();
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            string pattern = @"[A-Za-z0-9]+://([A-Za-z]+(\.[A-Za-z]+)+)/[A-Za-z0-9]+/";
+            Regex rg = new Regex(pattern);
+            string sharelink = textBox1.Text;
+            Match matched = rg.Match(sharelink);
+            //Regex to get link from share link
+            MessageBox.Show(matched.Value);
+
 
         }
     }
