@@ -77,6 +77,14 @@ namespace TiktokRender
 
         #endregion
 
+        public class Root_Xbogus
+        {
+            [JsonProperty("X-Bogus")]
+            public string XBogus { get; set; }
+            public string param { get; set; }
+        }
+
+        #region DownloadVideo
         async void CallAPI(string cursor)
         {
             dtVideo.Rows.Clear();
@@ -222,6 +230,7 @@ namespace TiktokRender
             dtVideo.Rows[rowindex].Cells[0].Value = false;
 
         }
+        #endregion
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -249,16 +258,95 @@ namespace TiktokRender
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
-            string pattern = @"[A-Za-z0-9]+://([A-Za-z]+(\.[A-Za-z]+)+)/[A-Za-z0-9]+/";
-            Regex rg = new Regex(pattern);
+            string pattern_channel = @"[A-Za-z]+://([A-Za-z]+(\.[A-Za-z]+)+)/@[A-Za-z]+";
+            string pattern_video = @"[A-Za-z]+://([A-Za-z]+(\.[A-Za-z]+)+)/@([A-Za-z0-9]+(/[A-Za-z0-9]+)+)";
+            //string pattern = @"[A-Za-z0-9]+://([A-Za-z]+(\.[A-Za-z]+)+)/[A-Za-z0-9]+/";
+
+            Regex rg = new Regex(pattern_channel);
             string sharelink = textBox1.Text;
+            //Match matched = rg.Match(sharelink);
             Match matched = rg.Match(sharelink);
-            //Regex to get link from share link
-            MessageBox.Show(matched.Value);
+            if (matched.Success)
+            {
+                MessageBox.Show("Channel link");
+            }
+            else
+            {
+                MessageBox.Show("Video link");
+            }
 
 
         }
+
+        void Generate_msToken()
+        {
+            string ran_string = "";
+            Random ran = new Random();
+
+        }
+
+        async void Post_XBogus(string original_video, string id)
+        {
+            var options = new RestClientOptions()
+            {
+                MaxTimeout = -1,
+            };
+            var client = new RestClient(options);
+            var request = new RestRequest("https://tiktok.iculture.cc/X-Bogus", Method.Post);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Cookie", "acw_tc=2760826716781531833418589e07e7428eee6a29190264da94cbedf0cbd2c6");
+
+            string head = "{\"url\":";
+            string tail = ",\"user_agent\":\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36\"}";
+
+            var raw_body = head + original_video + tail;
+
+            request.AddStringBody(raw_body, DataFormat.Json);
+
+            RestResponse response = await client.ExecuteAsync(request);
+            var json = response.Content;
+            Root_Xbogus parsed_json = JsonConvert.DeserializeObject<Root_Xbogus>(json);
+            string xbogus_link = parsed_json.param;
+
+
+            
+        }
+
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            string pattern_video = @"[A-Za-z]+://([A-Za-z0-9]+(\.[A-Za-z0-9]+)+)/[A-Za-z0-9]+/";
+            Regex reg = new Regex(pattern_video);
+            Match rs = reg.Match(textBox1.Text);
+            string v_link = rs.Value;
+
+            var options = new RestClientOptions()
+            {
+                MaxTimeout = -1,
+                UserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1",
+            };
+            var client = new RestClient(options);
+            var request = new RestRequest(v_link, Method.Get);
+            request.AddHeader("Upgrade-Insecure-Requests", "1");
+            request.AddHeader("Cookie", "__ac_nonce=06405b6f1001c6f5b3beb");
+            RestResponse response = await client.ExecuteAsync(request);
+            Uri fullUrl = response.ResponseUri;
+
+            //Regex to specify id video from share video links
+            string regex_id = @"\d+";
+            Regex rg = new Regex(regex_id);
+            Match matched = rg.Match(fullUrl.ToString());
+            string id = matched.Value;
+            MessageBox.Show(id);
+
+            string sq = @"""";
+            string original_video = sq + "https://www.douyin.com/aweme/v1/web/aweme/detail/?aweme_id=" + id + "&aid=1128&version_name=23.5.0&device_platform=android&os_version=2333" + sq;
+
+            Post_XBogus(original_video, id);
+
+        }
+
+
     }
 }
